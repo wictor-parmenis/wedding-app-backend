@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  wedding-app-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: wedding-app-api
+    ports:
+      - '3000:3000'
+    environment:
+      DATABASE_URL: postgres://admin:password@database:5432/wedding_database
+    depends_on:
+      - database
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+
+  database:
+    image: postgres:latest
+    container_name: database-container
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: wedding_database
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - '5432:5432'
+
+volumes:
+  pgdata:

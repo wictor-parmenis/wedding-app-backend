@@ -35,16 +35,46 @@ lerna-debug.log*
 !.vscode/launch.json
 !.vscode/extensions.json
 
-# dotenv environment variable files
+# Environment variables
 .env
-.env.development.local
-.env.test.local
-.env.production.local
+.env.development
+.env.test
+.env.production
 .env.local
+.env*.local
+
+# Prisma
+/generated
+.prisma/
+*.db
+*.db-journal
+/prisma/migrations/
+/prisma/dev.db
+/prisma/*.db
+/prisma/*.db-journal
+
+# Docker
+.docker/
+docker-compose.override.yml
+docker-compose.*.yml
+!docker-compose.yml
+docker-compose.prod.yml
+.dockerignore
+
+# Firebase
+firebase-credentials.json
+firebase-adminsdk.json
+*-firebase-adminsdk-*.json
+.firebase/
+firebase-debug.log
+firebase-debug.*.log
+.firebaserc
 
 # temp directory
 .temp
 .tmp
+/temp
+/tmp
 
 # Runtime data
 pids
@@ -52,5 +82,14 @@ pids
 *.seed
 *.pid.lock
 
-# Diagnostic reports (https://nodejs.org/api/report.html)
+# Diagnostic reports
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+
+# System Files
+Thumbs.db
+.DS_Store
+
+# Development
+*.dev.*
+*.local.*
+

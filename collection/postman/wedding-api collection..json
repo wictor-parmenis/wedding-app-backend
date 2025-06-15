@@ -1,0 +1,288 @@
+{
+  "info": {
+    "name": "Personal",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "wedding-app",
+      "item": [
+        {
+          "name": "Login",
+          "event": [],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{urlBase}}auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"wictoracademico@gmail.com\",\n  \"senha\": \"Testando123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Me",
+          "event": [],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{urlBase}}auth/me"
+          }
+        },
+        {
+          "name": "Register",
+          "event": [],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{urlBase}}auth/register",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"Adilson Matos\",\n  \"password\": \"132465789\",\n  \"email\": \"nunojira@gmail.com\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Test token",
+          "event": [],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{urlBase}}auth/test-token",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"nunojira@gmail.com\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Update password",
+          "event": [],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{urlBase}}auth/update-password",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"new_password\": \"123456\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Payment proof",
+          "item": [
+            {
+              "name": "Upload proof",
+              "event": [],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "multipart/form-data",
+                    "disabled": false,
+                    "type": "default"
+                  }
+                ],
+                "url": "{{urlBase}}files/upload"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Gifts",
+          "item": [
+            {
+              "name": "Create gift",
+              "event": [],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "disabled": false,
+                    "type": "default"
+                  }
+                ],
+                "url": "{{urlBase}}gifts",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"weddingId\": 4,\n    \"urlImage\": \"https://example.com/gift10.jpg\",\n    \"description\": \"Air Fryer 4L\",\n    \"price\": 45000\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "name": "List gifts",
+              "event": [],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": "{{urlBase}}gifts?coupleId=1"
+              }
+            },
+            {
+              "name": "Update gift status",
+              "event": [],
+              "request": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "disabled": false,
+                    "type": "default"
+                  }
+                ],
+                "url": "http://localhost:3000/v1/gifts/1/status",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{ \"statusId\": 2 }",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "name": "Update gift",
+              "event": [],
+              "request": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "disabled": false,
+                    "type": "default"
+                  }
+                ],
+                "url": "{{urlBase}}gifts/1",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"description\": \"Geladeira Frost Free 600L\",\n  \"price\": 600000,\n  \"urlImage\": \"https://example.com/gift1-updated.jpg\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "name": "Reserve",
+              "event": [],
+              "request": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "disabled": false,
+                    "type": "default"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer YOUR_FIREBASE_ID_TOKEN",
+                    "disabled": true,
+                    "type": "default"
+                  }
+                ],
+                "url": "{{urlBase}}gifts/1/reserve"
+              }
+            },
+            {
+              "name": "Cancel reservation",
+              "event": [],
+              "request": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "disabled": false,
+                    "type": "default"
+                  }
+                ],
+                "url": "{{urlBase}}gifts/1/cancel-reservation"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Wedding",
+          "item": [
+            {
+              "name": "Create wedding",
+              "event": [],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "disabled": false,
+                    "type": "default"
+                  }
+                ],
+                "url": "{{urlBase}}wedding",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"description\": \"Casamento de Adilson e Vitória\",\n    \"eventDate\": \"2025-12-31T20:00:00.000Z\",\n  \"location\": \"Salão de Festas XYZ\",\n  \"coupleName\": \"Adilson e Vitória\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "bruno",
+      "event": []
+    }
+  ],
+  "variable": [
+    {
+      "key": "urlBase",
+      "value": "",
+      "type": "default"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "default"
+    }
+  ]
+}

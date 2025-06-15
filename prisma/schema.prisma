@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider      = "prisma-client-js"
   output        = "../generated/prisma"
@@ -15,19 +9,125 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model WeddingStatus {
+  id      Int       @id @default(autoincrement())
+  name    String    @unique
+  Wedding Wedding[]
+}
+
+model GiftStatus {
+  id   Int    @id @default(autoincrement())
+  name String @unique
+  Gift Gift[]
+}
+
+model PaymentStatus {
+  id          Int           @id @default(autoincrement())
+  name        String        @unique
+  GiftPayment GiftPayment[]
+}
+
+model PaymentMethod {
+  id          Int           @id @default(autoincrement())
+  name        String        @unique
+  GiftPayment GiftPayment[]
+}
+
 model User {
-  id             Int       @id @default(autoincrement())
+  id             Int           @id @default(autoincrement())
+  external_id    String        @unique
   username       String
-  email          String    @unique
-  email_verified Boolean   @default(false)
-  phone_number   String?   @unique
-  hash           String?
-  salt           String?
+  email          String        @unique
+  email_verified Boolean       @default(false)
+  phone_number   String?       @unique
   refresh_token  String?
   deleted_at     DateTime?
-  created_at     DateTime  @default(now())
-  updated_at     DateTime  @updatedAt
+  created_at     DateTime      @default(now())
+  updated_at     DateTime      @updatedAt
+  GiftPayment    GiftPayment[]
+  Couple         Couple[]
 
   @@index([email])
   @@index([username])
+}
+
+model Wedding {
+  id              Int           @id @default(autoincrement())
+  invitation_code String        @unique
+  description     String
+  event_date      DateTime
+  location        String
+  status_id       Int           @default(1)
+  deleted_at      DateTime?
+  created_at      DateTime      @default(now())
+  updated_at      DateTime      @updatedAt
+  couple          Couple?
+  status          WeddingStatus @relation(fields: [status_id], references: [id])
+  Gift            Gift[]
+
+  @@index([event_date])
+  @@index([created_at])
+  @@index([location])
+  @@index([status_id])
+}
+
+model Couple {
+  id         Int       @id @default(autoincrement())
+  user_id    Int
+  name       String
+  wedding_id Int       @unique
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+  deleted_at DateTime?
+
+  wedding Wedding @relation(fields: [wedding_id], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [user_id], references: [id])
+
+  @@index([created_at])
+}
+
+model Gift {
+  id          Int       @id @default(autoincrement())
+  wedding_id  Int
+  url_image   String
+  description String
+  price       Int // Stored in cents/centavos
+  status_id   Int       @default(1)
+  deleted_at  DateTime?
+  created_at  DateTime  @default(now())
+  updated_at  DateTime  @updatedAt
+
+  wedding     Wedding       @relation(fields: [wedding_id], references: [id], onDelete: Cascade)
+  status      GiftStatus    @relation(fields: [status_id], references: [id])
+  GiftPayment GiftPayment[]
+
+  @@index([wedding_id])
+  @@index([status_id])
+  @@index([created_at])
+}
+
+model GiftPayment {
+  id                Int       @id @default(autoincrement())
+  gift_id           Int
+  user_id           Int
+  amount            Int // Stored in cents/centavos
+  status_id         Int       @default(1)
+  payment_method_id Int
+  transaction_id    String? // For external payment reference
+  payment_date      DateTime? // When the payment was completed
+  payment_proof_url String? // URL to the payment proof image
+  deleted_at        DateTime?
+  created_at        DateTime  @default(now())
+  updated_at        DateTime  @updatedAt
+
+  gift          Gift          @relation(fields: [gift_id], references: [id], onDelete: Cascade)
+  user          User          @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  status        PaymentStatus @relation(fields: [status_id], references: [id])
+  paymentMethod PaymentMethod @relation(fields: [payment_method_id], references: [id])
+
+  @@index([gift_id])
+  @@index([user_id])
+  @@index([status_id])
+  @@index([payment_method_id])
+  @@index([created_at])
 }

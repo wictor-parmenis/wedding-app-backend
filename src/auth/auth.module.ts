@@ -5,6 +5,7 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { UserModule } from '../user/user.module';
 import { FirebaseModule } from '../firebase/firebase.module';
+import { FirebaseAuthGuard } from './guards/firebase-auth.guard';
 
 @Module({
   imports: [
@@ -17,7 +18,7 @@ import { FirebaseModule } from '../firebase/firebase.module';
     FirebaseModule,
   ],
   controllers: [AuthController],
-  providers: [AuthService],
-  exports: [AuthService],
+  providers: [AuthService, FirebaseAuthGuard],
+  exports: [AuthService, FirebaseAuthGuard],
 })
 export class AuthModule {}

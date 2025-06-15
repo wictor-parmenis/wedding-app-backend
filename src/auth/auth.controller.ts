@@ -63,7 +63,7 @@ export class AuthController {
     return this.authService.updatePassword(user.uid, newPassword);
   }
 
-  @Post('forgot-password')
+  @Post('check-email')
   async forgotPassword(@Body('email') email: string) {
     return this.authService.sendPasswordResetEmail(email);
   }

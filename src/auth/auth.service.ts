@@ -5,25 +5,49 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import { FirebaseService } from '../firebase/firebase.service';
+import { UserService } from '../user/user.service';
 
 @Injectable()
 export class AuthService {
-  constructor(private readonly firebaseService: FirebaseService) {}
-
-  async register(username: string, email: string, password: string) {
+  constructor(
+    private readonly firebaseService: FirebaseService,
+    private readonly userService: UserService
+  ) {}
+  async register(username: string, email: string, password: string, phoneNumber?: string) {
     try {
+      // 1. Verifica se o usuário já existe no banco
+      const existingUser = await this.userService.findByEmail(email);
+      if (existingUser) {
+        throw new ConflictException('Email already in use');
+      }
+
+      // 2. Cria o usuário no Firebase
       const userRecord = await this.firebaseService.getAuth().createUser({
         email,
         password,
         displayName: username,
+        phoneNumber,
+      });      // 3. Cria o usuário no banco de dados
+      const user = await this.userService.create({
+        username,
+        email,
+        external_id: userRecord.uid,
+        phone_number: phoneNumber,
+        email_verified: userRecord.emailVerified,
       });
 
       return {
+        id: user.id,
         uid: userRecord.uid,
         email: userRecord.email,
         username: userRecord.displayName,
+        phoneNumber: user.phone_number,
+        emailVerified: user.email_verified,
       };
     } catch (error) {
+      if (error instanceof ConflictException) {
+        throw error;
+      }
       if (error.code === 'auth/email-already-exists') {
         throw new ConflictException('Email already in use');
       }
@@ -65,12 +89,21 @@ export class AuthService {
       }
 
       const user = await this.firebaseService.getAuth().getUser(uid);
+      if (!user.email) {
+        throw new UnauthorizedException('User email not found');
+      }
+
+      const userInDatabase = await this.userService.findByEmail(user.email);
+
+      if (!userInDatabase) {
+        throw new UnauthorizedException('User not found');
+      }
       
       return {
-        uid: user.uid,
-        email: user.email,
-        username: user.displayName,
-        emailVerified: user.emailVerified,
+        uid: userInDatabase?.external_id,
+        email: userInDatabase.email,
+        id: userInDatabase.id,
+        username: userInDatabase.username,
       };
     } catch (error) {
       throw new UnauthorizedException('Invalid token');
@@ -92,20 +125,16 @@ export class AuthService {
     }
   }
 
-  // Para iniciar o processo de "esqueci minha senha"
   async sendPasswordResetEmail(email: string) {
     try {
-      // Verificar se o usuário existe
       await this.firebaseService.getAuth().getUserByEmail(email);
       
-      // Em produção, você usaria o Firebase Client SDK para enviar o email
-      // No backend, podemos apenas verificar se o usuário existe
+     
       return { 
         message: 'If the email exists, a password reset link will be sent',
         info: 'Note: In production, use Firebase Client SDK to send reset email'
       };
     } catch (error) {
-      // Por segurança, não informamos se o email existe ou não
       return { 
         message: 'If the email exists, a password reset link will be sent',
         info: 'Note: In production, use Firebase Client SDK to send reset email'

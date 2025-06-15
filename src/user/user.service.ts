@@ -16,16 +16,21 @@ export class UserService {
     return await this.prisma.user.findUnique({
       where: { id },
     });
-  }
-
-  async create(data: {
+  }  async create(data: {
     username: string;
     email: string;
-    hash: string;
-    salt: string;
+    external_id: string;
+    phone_number?: string;
+    email_verified?: boolean;
   }): Promise<User> {
     return await this.prisma.user.create({
-      data,
+      data: {
+        username: data.username,
+        email: data.email,
+        external_id: data.external_id,
+        phone_number: data.phone_number,
+        email_verified: data.email_verified || false,
+      },
     });
   }
 

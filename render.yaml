@@ -3,7 +3,7 @@ services:
     name: wedding-app-api
     runtime: docker
     region: oregon
-    plan: starter
+    plan: free
     healthCheckPath: /
     envVars:
       - key: NODE_ENV
@@ -18,4 +18,5 @@ services:
 databases:
   - name: wedding-db
     region: oregon
-    plan: starter
+    plan: free
+    ipAllowList: []  # optional (allows all IPs by default)

@@ -31,17 +31,9 @@ export class GiftRepository {
                 wedding: true,
                 status: true,
                 GiftPayment: {
-                    include: {
-                        status: true,
-                        paymentMethod: true,
-                        user: {
-                            select: {
-                                id: true,
-                                username: true,
-                                email: true
-                            }
-                        }
-                    }
+                    where: {
+                        deleted_at: null
+                    },
                 }
             }
         });
@@ -61,17 +53,6 @@ export class GiftRepository {
                     where: {
                         deleted_at: null
                     },
-                    include: {
-                        status: true,
-                        paymentMethod: true,
-                        user: {
-                            select: {
-                                id: true,
-                                username: true,
-                                email: true
-                            }
-                        }
-                    }
                 }
             },
             orderBy: {
@@ -79,7 +60,6 @@ export class GiftRepository {
             }
         });
     }
-
     async updateGiftStatus(giftId: number, statusId: GiftStatus) {
         return await this.prisma.gift.update({
             where: { id: giftId },
@@ -88,6 +68,9 @@ export class GiftRepository {
                 wedding: true,
                 status: true,
                 GiftPayment: {
+                    where: {
+                        deleted_at: null
+                    },
                     include: {
                         status: true,
                         paymentMethod: true,
@@ -101,31 +84,21 @@ export class GiftRepository {
         return await this.prisma.gift.delete({
             where: { id: giftId }
         });
-    }
-
-    async findById(giftId: number) {
+    }    async findById(giftId: number) {
         return await this.prisma.gift.findUnique({
             where: { id: giftId },
             include: {
                 wedding: true,
                 status: true,
                 GiftPayment: {
-                    include: {
-                        status: true,
-                        paymentMethod: true,
-                        user: {
-                            select: {
-                                id: true,
-                                username: true,
-                                email: true
-                            }
-                        }
-                    }
+                    where: {
+                        deleted_at: null
+                    },
                 }
             }
         });
     }
-
+    
     async update(giftId: number, data: { description?: string; price?: number; url_image?: string }) {
         return await this.prisma.gift.update({
             where: { id: giftId },
@@ -134,10 +107,9 @@ export class GiftRepository {
                 wedding: true,
                 status: true,
                 GiftPayment: {
-                    include: {
-                        status: true,
-                        paymentMethod: true,
-                    }
+                    where: {
+                        deleted_at: null
+                    },
                 }
             }
         });

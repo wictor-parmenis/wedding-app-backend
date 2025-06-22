@@ -30,6 +30,7 @@ INSERT INTO "PaymentMethod" (id, name) VALUES (1, 'CREDIT_CARD');
 INSERT INTO "PaymentMethod" (id, name) VALUES (2, 'DEBIT_CARD');
 INSERT INTO "PaymentMethod" (id, name) VALUES (3, 'PIX');
 INSERT INTO "PaymentMethod" (id, name) VALUES (4, 'BANK_TRANSFER');
+INSERT INTO "PaymentMethod" (id, name) VALUES (5, 'DIRECT_PURCHASE');
 
 -- Usuários
 INSERT INTO "User" (id, username, email, email_verified, phone_number, hash, salt, created_at, updated_at) VALUES 

@@ -98,15 +98,13 @@ export class GiftService {
                 throw new BadRequestException(`Gift is not available for reservation. Current status: ${GiftStatus[gift.status_id]}`);
             }
 
-            // Atualiza o status do presente para RESERVED
             const updatedGift = await this.updateStatus(giftId, GiftStatus.RESERVED);
 
-            // Cria um pagamento pendente
             const payment = await this.giftPaymentService.create({
                 giftId: gift.id,
                 userId: userId,
                 amount: gift.price,
-                paymentMethodId: PaymentMethod.PIX // Usando PIX como método padrão
+                paymentMethodId: PaymentMethod.PIX 
             });
 
             return {
@@ -124,7 +122,7 @@ export class GiftService {
     async uploadProofPaymentGift(
         giftId: number,
         paymentId: number,
-        proofFile: any, // Express.Multer.File type
+        proofFile: any, 
         paymentMethod: PaymentMethod
     ) {
         try {
@@ -134,21 +132,32 @@ export class GiftService {
                 throw new NotFoundException(`Gift with ID ${giftId} not found`);
             }
 
+            
             if (gift.status_id !== GiftStatus.RESERVED) {
+                // front: esse presente não estava reservado, gostaria de continuar mesmo assim?
                 throw new BadRequestException(`Gift must be in RESERVED status to upload payment proof. Current status: ${GiftStatus[gift.status_id]}`);
-            }
-
-            // 1. Faz upload do comprovante
-            const uploadResult = await this.fileService.uploadPDF(proofFile);
-
-            // 2. Atualiza o GiftPayment com o comprovante, status e método de pagamento
-            await this.giftPaymentService.updatePayment(paymentId, {
-                paymentProofUrl: uploadResult.url,
-                statusId: 2, // COMPLETED
-                paymentMethodId: paymentMethod
+            }           
+            const uploadResult = await this.fileService.uploadFile(proofFile, {
+                weddingId: gift.wedding_id,
+                userId: gift.GiftPayment[0]?.user_id, 
+                paymentId: paymentId,
+                fileType: 'payment-proof'
             });
 
-            // 3. Atualiza o status do presente para PURCHASED
+            if (!uploadResult || !uploadResult.url) {
+                throw new BadRequestException('Failed to upload payment proof');
+            }
+
+            console.log({
+                uploadResult, paymentMethod
+            })
+
+            await this.giftPaymentService.updatePayment(paymentId, {
+                paymentProofUrl: uploadResult.url,
+                statusId: 2, 
+                paymentMethodId: Number(paymentMethod)
+            });
+
             const updatedGift = await this.updateStatus(giftId, GiftStatus.PURCHASED);
 
             return {
@@ -156,6 +165,7 @@ export class GiftService {
                 proofUrl: uploadResult.url
             };
         } catch (error) {
+            console.log('Error uploading payment proof:', error);
             if (error instanceof BadRequestException || error instanceof NotFoundException) {
                 throw error;
             }
@@ -175,19 +185,90 @@ export class GiftService {
                 throw new BadRequestException(`Gift must be in RESERVED status to cancel reservation. Current status: ${GiftStatus[gift.status_id]}`);
             }
 
-            // Soft delete the associated GiftPayment first
-            const payment = gift.GiftPayment[0]; // Get the most recent payment
+            const payment = gift.GiftPayment[0]; 
             if (payment) {
                 await this.giftPaymentService.softDelete(payment.id);
             }
 
-            // Then update gift status to AVAILABLE
             return await this.updateStatus(giftId, GiftStatus.AVAILABLE);
         } catch (error) {
             if (error instanceof BadRequestException || error instanceof NotFoundException) {
                 throw error;
             }
             throw new BadRequestException('Failed to cancel gift reservation');
+        }
+    }
+
+    async cancelPurchasedGift(giftId: number) {
+        try {
+            const gift = await this.giftRepository.findById(giftId);
+            
+            if (!gift) {
+                throw new NotFoundException(`Gift with ID ${giftId} not found`);
+            }
+
+            if (gift.status_id !== GiftStatus.PURCHASED) {
+                throw new BadRequestException(`Gift must be in PURCHASED status to cancel purchase. Current status: ${GiftStatus[gift.status_id]}`);
+            }
+
+            // Soft delete do GiftPayment associado
+            const payment = gift.GiftPayment[0]; // Pega o pagamento mais recente
+            if (payment) {
+                await this.giftPaymentService.softDelete(payment.id);
+            } else {
+                throw new BadRequestException('No payment found for this gift');
+            }
+
+            // Atualiza o status do presente para AVAILABLE
+            return await this.updateStatus(giftId, GiftStatus.AVAILABLE);
+        } catch (error) {
+            if (error instanceof BadRequestException || error instanceof NotFoundException) {
+                throw error;
+            }
+            throw new BadRequestException('Failed to cancel gift purchase');
+        }
+    }
+
+    async confirmDirectPurchase(giftId: number, userId: number) {
+        try {
+            const gift = await this.giftRepository.findById(giftId);
+            
+            if (!gift) {
+                throw new NotFoundException(`Gift with ID ${giftId} not found`);
+            }
+
+            // Verifica se o presente está disponível (não reservado)
+            if (gift.status_id !== GiftStatus.AVAILABLE) {
+                throw new BadRequestException(`Cannot confirm direct purchase. Gift is not available. Current status: ${GiftStatus[gift.status_id]}`);
+            }
+
+            // Cria um registro de pagamento direto
+            const createdPayment = await this.giftPaymentService.create({
+                giftId: gift.id,
+                userId: userId,
+                amount: gift.price,
+                paymentMethodId: PaymentMethod.DIRECT_PURCHASE
+            });
+
+            // Atualiza o status do pagamento para COMPLETED
+            await this.giftPaymentService.updatePayment(createdPayment.id, {
+                paymentProofUrl: '', // Não há comprovante para compra direta
+                statusId: 2, // COMPLETED
+                paymentMethodId: PaymentMethod.DIRECT_PURCHASE
+            });
+
+            // Atualiza o status do presente para PURCHASED
+            const updatedGift = await this.updateStatus(giftId, GiftStatus.PURCHASED);
+
+            return {
+                gift: updatedGift,
+                payment: createdPayment
+            };
+        } catch (error) {
+            if (error instanceof BadRequestException || error instanceof NotFoundException) {
+                throw error;
+            }
+            throw new BadRequestException('Failed to confirm direct purchase');
         }
     }
 }

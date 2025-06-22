@@ -50,6 +50,13 @@ export class GiftController {
     async cancelReservation(@Param('id') id: string) {
         return await this.giftService.cancelGiftReservation(Number(id));
     }
+
+    @Patch(':id/cancel-purchase')
+    async cancelPurchase(
+        @Param('id') id: string
+    ) {
+        return await this.giftService.cancelPurchasedGift(Number(id));
+    }
     
     @Post(':id/payments/:paymentId/proof')
     @UseInterceptors(FileInterceptor('proofFile'))
@@ -65,6 +72,14 @@ export class GiftController {
             proofFile,
             paymentMethod
         );
+    }
+
+    @Post(':id/confirm-direct-purchase')
+    async confirmDirectPurchase(
+        @Param('id') id: string,
+        @CurrentUser() user: any
+    ) {
+        return await this.giftService.confirmDirectPurchase(Number(id), user.id);
     }
 
 }

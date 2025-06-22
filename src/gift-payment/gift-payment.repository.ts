@@ -62,6 +62,7 @@ export class GiftPaymentRepository {
         paymentMethodId: number,
         paymentProofUrl: string
     ) {
+
         return await this.prisma.giftPayment.update({
             where: { id: paymentId },
             data: { 

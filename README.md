@@ -258,3 +258,9 @@ Todos os recursos são criados automaticamente com:
    - Implementar regras de validação (comprimento mínimo, caracteres especiais, etc.)
    - Retornar mensagens de erro específicas se a validação falhar
 
+### Mensagens de UX que podem ser úteis
+
+#### Modal de confirmação de compra de presente sem envio de comprovante
+Iremos notificar aos noivos que esse presente já foi comprado e que podemos retirar ele da lista.
+
+Deseja confirmar ação de confirmação de compra?

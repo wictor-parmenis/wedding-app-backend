@@ -27,7 +27,7 @@ export class GiftPaymentService {    constructor(
                 throw new NotFoundException(`Gift with ID ${data.giftId} not found`);
             }
 
-            if (gift.status_id !== GiftStatus.RESERVED) {
+            if (gift.status_id !== GiftStatus.RESERVED && data.paymentMethodId !==  PaymentMethod['DIRECT_PURCHASE']) {
                 throw new BadRequestException(`Gift must be reserved before creating a payment. Current status: ${GiftStatus[gift.status_id]}`);
             }
 
@@ -77,6 +77,7 @@ export class GiftPaymentService {    constructor(
 
             return payment;
         } catch (error) {
+            console.log('Error updating payment:', error);
             if (error instanceof NotFoundException) {
                 throw error;
             }

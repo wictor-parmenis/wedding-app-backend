@@ -34,18 +34,19 @@ model PaymentMethod {
 }
 
 model User {
-  id             Int           @id @default(autoincrement())
-  external_id    String        @unique
-  username       String
-  email          String        @unique
-  email_verified Boolean       @default(false)
-  phone_number   String?       @unique
-  refresh_token  String?
-  deleted_at     DateTime?
-  created_at     DateTime      @default(now())
-  updated_at     DateTime      @updatedAt
-  GiftPayment    GiftPayment[]
-  Couple         Couple[]
+  id              Int               @id @default(autoincrement())
+  external_id     String            @unique
+  username        String
+  email           String            @unique
+  email_verified  Boolean           @default(false)
+  phone_number    String?           @unique
+  refresh_token   String?
+  deleted_at      DateTime?
+  created_at      DateTime          @default(now())
+  updated_at      DateTime          @updatedAt
+  GiftPayment     GiftPayment[]
+  Couple          Couple[]
+  GiftReservation GiftReservation[]
 
   @@index([email])
   @@index([username])
@@ -91,15 +92,16 @@ model Gift {
   wedding_id  Int
   url_image   String
   description String
-  price       Int // Stored in cents/centavos
+  price       Int
   status_id   Int       @default(1)
   deleted_at  DateTime?
   created_at  DateTime  @default(now())
   updated_at  DateTime  @updatedAt
 
-  wedding     Wedding       @relation(fields: [wedding_id], references: [id], onDelete: Cascade)
-  status      GiftStatus    @relation(fields: [status_id], references: [id])
-  GiftPayment GiftPayment[]
+  wedding         Wedding          @relation(fields: [wedding_id], references: [id], onDelete: Cascade)
+  status          GiftStatus       @relation(fields: [status_id], references: [id])
+  GiftPayment     GiftPayment[]
+  GiftReservation GiftReservation?
 
   @@index([wedding_id])
   @@index([status_id])
@@ -129,5 +131,23 @@ model GiftPayment {
   @@index([user_id])
   @@index([status_id])
   @@index([payment_method_id])
+  @@index([created_at])
+}
+
+model GiftReservation {
+  id         Int      @id @default(autoincrement())
+  user_id    Int
+  gift_id    Int
+  ttl        DateTime // Data de expiração da reserva
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  gift Gift @relation(fields: [gift_id], references: [id], onDelete: Cascade)
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@unique([gift_id]) // Garante que um presente só pode ter uma reserva ativa
+  @@index([gift_id])
+  @@index([user_id])
+  @@index([ttl])
   @@index([created_at])
 }

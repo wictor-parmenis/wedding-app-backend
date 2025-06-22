@@ -20,21 +20,39 @@ export class FileService {
             },
         });
     }
-
-    async uploadPDF(file: UploadedFile): Promise<FileUploadResponse> {
+      async uploadFile(
+        file: UploadedFile,
+        options?: {
+            weddingId?: number;
+            userId?: number;
+            paymentId?: number;
+            fileType?: 'payment-proof' | 'other';
+        }
+    ): Promise<FileUploadResponse> {
         if (!file) {
             throw new BadRequestException('No file uploaded');
         }
-
-        if (file.mimetype !== AllowedFileType.PDF) {
-            throw new BadRequestException('Only PDF files are allowed');
+        
+        const allowedMimetypes = Object.values(AllowedFileType) as string[];
+        if (!allowedMimetypes.includes(file.mimetype)) {
+            throw new BadRequestException('Only PDF, PNG and JPG/JPEG files are allowed');
         }
 
         if (file.size > FILE_SIZE_LIMIT) {
             throw new BadRequestException('File size exceeds 5MB limit');
         }
 
-        const key = `uploads/${Date.now()}-${file.originalname}`;
+        let key: string;
+        const timestamp = Date.now();
+        const extension = file.originalname.split('.').pop() || 'unknown';
+
+        if (options?.fileType === 'payment-proof' && options.weddingId && options.userId && options.paymentId) {
+            // Estrutura organizada para comprovantes de pagamento
+            key = `weddings/${options.weddingId}/payments/${options.userId}/${options.paymentId}-${timestamp}.${extension}`;
+        } else {
+            // Fallback para outros tipos de upload
+            key = `uploads/other/${timestamp}-${file.originalname}`;
+        }
         
         const uploadCommand = new PutObjectCommand({
             Bucket: this.bucketName,

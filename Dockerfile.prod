@@ -21,7 +21,6 @@ RUN npm ci --only=production
 COPY --from=builder /usr/src/app/dist ./dist
 COPY --from=builder /usr/src/app/generated ./generated
 COPY prisma ./prisma
-COPY .env .env
 
 EXPOSE 3000
 

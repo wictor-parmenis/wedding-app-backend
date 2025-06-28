@@ -89,29 +89,33 @@
           }
         },
         {
-          "name": "Payment proof",
+          "name": "Gifts",
           "item": [
             {
-              "name": "Upload proof",
+              "name": "Cancel purchase",
               "event": [],
               "request": {
-                "method": "POST",
+                "method": "PATCH",
+                "header": [],
+                "url": "{{urlBase}}gifts/2/cancel-purchase?id=8"
+              }
+            },
+            {
+              "name": "Cancel reservation",
+              "event": [],
+              "request": {
+                "method": "PATCH",
                 "header": [
                   {
                     "key": "Content-Type",
-                    "value": "multipart/form-data",
+                    "value": "application/json",
                     "disabled": false,
                     "type": "default"
                   }
                 ],
-                "url": "{{urlBase}}files/upload"
+                "url": "{{urlBase}}gifts/2/cancel-reservation"
               }
-            }
-          ]
-        },
-        {
-          "name": "Gifts",
-          "item": [
+            },
             {
               "name": "Create gift",
               "event": [],
@@ -126,6 +130,31 @@
                   }
                 ],
                 "url": "{{urlBase}}gifts",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"weddingId\": 4,\n    \"urlImage\": \"https://example.com/gift10.jpg\",\n    \"description\": \"TV 40 polegadas\",\n    \"price\": 1200\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "name": "Direct purchase",
+              "event": [],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "disabled": false,
+                    "type": "default"
+                  }
+                ],
+                "url": "{{urlBase}}gifts/1/confirm-direct-purchase",
                 "body": {
                   "mode": "raw",
                   "raw": "{\n    \"weddingId\": 4,\n    \"urlImage\": \"https://example.com/gift10.jpg\",\n    \"description\": \"Air Fryer 4L\",\n    \"price\": 45000\n}",
@@ -144,6 +173,22 @@
                 "method": "GET",
                 "header": [],
                 "url": "{{urlBase}}gifts?coupleId=1"
+              }
+            },
+            {
+              "name": "Reserve",
+              "event": [],
+              "request": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "disabled": false,
+                    "type": "default"
+                  }
+                ],
+                "url": "{{urlBase}}gifts/2/reserve"
               }
             },
             {
@@ -195,44 +240,6 @@
                   }
                 }
               }
-            },
-            {
-              "name": "Reserve",
-              "event": [],
-              "request": {
-                "method": "PATCH",
-                "header": [
-                  {
-                    "key": "Content-Type",
-                    "value": "application/json",
-                    "disabled": false,
-                    "type": "default"
-                  },
-                  {
-                    "key": "Authorization",
-                    "value": "Bearer YOUR_FIREBASE_ID_TOKEN",
-                    "disabled": true,
-                    "type": "default"
-                  }
-                ],
-                "url": "{{urlBase}}gifts/1/reserve"
-              }
-            },
-            {
-              "name": "Cancel reservation",
-              "event": [],
-              "request": {
-                "method": "PATCH",
-                "header": [
-                  {
-                    "key": "Content-Type",
-                    "value": "application/json",
-                    "disabled": false,
-                    "type": "default"
-                  }
-                ],
-                "url": "{{urlBase}}gifts/1/cancel-reservation"
-              }
             }
           ]
         },
@@ -261,6 +268,46 @@
                       "language": "json"
                     }
                   }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Payment proof",
+          "item": [
+            {
+              "name": "Upload proof",
+              "event": [],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "multipart/form-data",
+                    "disabled": false,
+                    "type": "default"
+                  }
+                ],
+                "url": "{{urlBase}}gifts/2/payments/8/proof",
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "proofFile",
+                      "value": [
+                        "C:\\Users\\wicto\\Downloads\\proofFile.png"
+                      ],
+                      "disabled": false,
+                      "type": "default"
+                    },
+                    {
+                      "key": "paymentMethod",
+                      "value": "3",
+                      "disabled": false,
+                      "type": "default"
+                    }
+                  ]
                 }
               }
             }

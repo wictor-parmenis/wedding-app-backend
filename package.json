@@ -20,7 +20,8 @@
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate deploy",
-    "seed": "docker exec -i database-container psql -U admin -d wedding_database -f /docker-entrypoint-initdb.d/01_seed.sql"
+    "seed_manual": "docker exec -i database-container psql -U admin -d wedding_database -f /docker-entrypoint-initdb.d/01_seed.sql",
+    "seed": "ts-node prisma/seed.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.828.0",
@@ -37,6 +38,7 @@
     "bcrypt": "^6.0.0",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.2",
+    "dotenv": "^17.0.0",
     "firebase-admin": "^13.4.0",
     "multer": "^2.0.1",
     "passport": "^0.7.0",
@@ -90,5 +92,8 @@
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
+  },
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
   }
 }

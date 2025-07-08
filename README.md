@@ -177,8 +177,8 @@ Reserva um presente e cria um pagamento pendente via PIX.
   "payment": {
     "id": number,
     "amount": number,
-    "payment_method_id": 1, // PIX
-    "status_id": 1 // PENDING
+    "payment_method_id": 3, // PIX
+    "status_id": 2 // PENDING
   }
 }
 ```
@@ -210,7 +210,7 @@ Faz upload do comprovante de pagamento e atualiza o status do presente para PURC
 **Parameters:**
 
 - `proofFile`: File (imagem do comprovante)
-- `paymentMethod`: number (1: PIX, 2: Direct Purchase)
+- `paymentMethod`: number (3: PIX)
 
 **Response:**
 

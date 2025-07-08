@@ -145,7 +145,94 @@ Authorization: Bearer your-firebase-token
 
 ## 📝 API Documentation
 
-[Add your API documentation here]
+### Gift Endpoints
+
+#### Reserve Gift
+
+```http
+PATCH /v1/gifts/:id/reserve
+```
+
+Reserva um presente e cria um pagamento pendente via PIX.
+
+**URL Parameters:**
+
+- `:id` - ID do presente que será reservado (number)
+
+**Headers:**
+
+- `Authorization: Bearer <firebase-token>`
+
+**Response:**
+
+```json
+{
+  "gift": {
+    "id": number,
+    "status_id": 2, // RESERVED
+    "description": string,
+    "price": number,
+    "url_image": string
+  },
+  "payment": {
+    "id": number,
+    "amount": number,
+    "payment_method_id": 1, // PIX
+    "status_id": 1 // PENDING
+  }
+}
+```
+
+**Possíveis Erros:**
+
+- `404 Not Found`: Presente não encontrado
+- `400 Bad Request`: Presente não está disponível para reserva
+- `400 Bad Request`: Falha ao reservar presente
+
+#### Upload Payment Proof
+
+```http
+POST /v1/gifts/:id/payments/:paymentId/proof
+```
+
+Faz upload do comprovante de pagamento e atualiza o status do presente para PURCHASED.
+
+**URL Parameters:**
+
+- `:id` - ID do presente que receberá o comprovante (number)
+- `:paymentId` - ID do pagamento associado ao presente (number)
+
+**Headers:**
+
+- `Authorization: Bearer <firebase-token>`
+- `Content-Type: multipart/form-data`
+
+**Parameters:**
+
+- `proofFile`: File (imagem do comprovante)
+- `paymentMethod`: number (1: PIX, 2: Direct Purchase)
+
+**Response:**
+
+```json
+{
+  "gift": {
+    "id": number,
+    "status_id": 3, // PURCHASED
+    "description": string,
+    "price": number,
+    "url_image": string
+  },
+  "proofUrl": string // URL do comprovante no S3
+}
+```
+
+**Possíveis Erros:**
+
+- `404 Not Found`: Presente não encontrado
+- `400 Bad Request`: Presente não está reservado
+- `400 Bad Request`: Falha ao fazer upload do comprovante
+- `400 Bad Request`: Falha ao atualizar status do presente
 
 ## Compile and run the project
 

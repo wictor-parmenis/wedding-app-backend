@@ -6,13 +6,15 @@ import { GiftController } from './gift.controller';
 import { GiftPaymentModule } from '../gift-payment/gift-payment.module';
 import { FileModule } from '../file/file.module';
 import { AuthModule } from '../auth/auth.module';
+import { GiftReservationModule } from 'src/gift-reservation/gift-reservation.module';
 
 @Module({
     imports: [
         PrismaModule,
         forwardRef(() => GiftPaymentModule),
         FileModule,
-        AuthModule
+        AuthModule,
+        GiftReservationModule
     ],
     controllers: [GiftController],
     providers: [GiftService, GiftRepository],

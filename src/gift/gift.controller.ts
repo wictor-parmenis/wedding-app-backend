@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Delete, Patch, Body, Param, Query, UseInterceptors, UploadedFile, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Delete, Patch, Body, Param, Query, UseInterceptors, UploadedFile, UseGuards, HttpCode } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { GiftService } from './gift.service';
 import { CreateGiftDto } from './dto/create-gift.dto';
@@ -39,23 +39,29 @@ export class GiftController {
     }
     
     @Patch(':id/reserve')
+    @HttpCode(204)
     async reserve(
         @Param('id') id: string,
         @CurrentUser() user: any
     ) {
-        return await this.giftService.reserveGift(Number(id), user.id);
+        await this.giftService.reserveGift(Number(id), user.id);
+        return;
     }
 
     @Patch(':id/cancel-reservation')
-    async cancelReservation(@Param('id') id: string) {
-        return await this.giftService.cancelGiftReservation(Number(id));
+    async cancelReservation(
+        @Param('id') id: string,
+        @CurrentUser() user: any
+    ) {
+        return await this.giftService.cancelGiftReservation(Number(id), user.id);
     }
 
     @Patch(':id/cancel-purchase')
     async cancelPurchase(
-        @Param('id') id: string
+        @Param('id') id: string,
+        @CurrentUser() user: any
     ) {
-        return await this.giftService.cancelPurchasedGift(Number(id));
+        return await this.giftService.cancelPurchasedGift(Number(id), user.id);
     }
     
     @Post(':id/payments/:paymentId/proof')

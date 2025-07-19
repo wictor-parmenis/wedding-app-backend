@@ -175,6 +175,8 @@ export class GiftService {
                 throw new BadRequestException(`Gift must be in RESERVED status to cancel reservation. Current status: ${GiftStatus[gift.status_id]}`);
             }
 
+            console.log('User ID:', userId);
+
             const isOwnerReservation = await this.giftReservationService.isReservationOwner(userId, giftId);
 
             if (!isOwnerReservation) {
@@ -267,5 +269,13 @@ export class GiftService {
             }
             throw new BadRequestException('Failed to confirm direct purchase');
         }
+    }
+
+    async getGiftDetails(giftId: number) {
+        const gift = await this.giftRepository.findById(giftId);
+        if (!gift) {
+            throw new NotFoundException(`Gift with ID ${giftId} not found`);
+        }
+        return gift;
     }
 }

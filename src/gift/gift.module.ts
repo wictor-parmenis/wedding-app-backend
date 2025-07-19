@@ -7,6 +7,7 @@ import { GiftPaymentModule } from '../gift-payment/gift-payment.module';
 import { FileModule } from '../file/file.module';
 import { AuthModule } from '../auth/auth.module';
 import { GiftReservationModule } from 'src/gift-reservation/gift-reservation.module';
+import { GiftAdminController } from './gift.admin.controller';
 
 @Module({
     imports: [
@@ -16,7 +17,7 @@ import { GiftReservationModule } from 'src/gift-reservation/gift-reservation.mod
         AuthModule,
         GiftReservationModule
     ],
-    controllers: [GiftController],
+    controllers: [GiftController, GiftAdminController],
     providers: [GiftService, GiftRepository],
     exports: [GiftService, GiftRepository]
 })

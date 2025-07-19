@@ -45,12 +45,24 @@ model User {
   deleted_at      DateTime?
   created_at      DateTime          @default(now())
   updated_at      DateTime          @updatedAt
+  role_id         Int
+  role            Role              @relation(fields: [role_id], references: [id])
   GiftPayment     GiftPayment[]
   Couple          Couple[]
   GiftReservation GiftReservation[]
 
   @@index([email])
   @@index([username])
+  @@index([role_id])
+}
+
+model Role {
+  id          Int       @id @default(autoincrement())
+  description String
+  created_at  DateTime  @default(now())
+  updated_at  DateTime  @updatedAt
+  deleted_at  DateTime?
+  users       User[]
 }
 
 model Wedding {

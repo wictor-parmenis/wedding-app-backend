@@ -84,7 +84,9 @@ export class GiftRepository {
         return await this.prisma.gift.delete({
             where: { id: giftId }
         });
-    }    async findById(giftId: number) {
+    }
+    
+    async findById(giftId: number) {
         return await this.prisma.gift.findUnique({
             where: { id: giftId },
             include: {

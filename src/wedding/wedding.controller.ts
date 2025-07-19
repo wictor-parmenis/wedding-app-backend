@@ -12,7 +12,6 @@ export class WeddingController {
 
   @Post()
   create(@Body() createWeddingDto: CreateWeddingDto, @CurrentUser() user: any) {
-      console.log('User:', user);
     return this.weddingService.create(createWeddingDto, user.id);
   }
 }

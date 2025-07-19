@@ -17,8 +17,6 @@ export class FirebaseAuthGuard implements CanActivate {
     const token = authHeader.split(' ')[1];
     try {
       const user = await this.authService.validateFirebaseToken(token);
-      console.log('user ->', user);
-      // Adiciona o usuário ao request para uso posterior
       request.user = user;
       return true;
     } catch (error) {

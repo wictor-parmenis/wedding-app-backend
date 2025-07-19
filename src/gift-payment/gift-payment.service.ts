@@ -7,9 +7,10 @@ import { GiftRepository } from '../gift/gift.repository';
 import { PaymentMethod } from './enums/payment-method.enum';
 
 @Injectable()
-export class GiftPaymentService {    constructor(
+export class GiftPaymentService {
+    constructor(
         private readonly giftPaymentRepository: GiftPaymentRepository,
-        private readonly giftRepository: GiftRepository
+        private readonly giftRepository: GiftRepository,
     ) {}
 
     async create(data: {
@@ -20,7 +21,6 @@ export class GiftPaymentService {    constructor(
         transactionId?: string;
     }) {
         try {
-            // Primeiro, verifica se o presente existe e está reservado
             const gift = await this.giftRepository.findById(data.giftId);
             
             if (!gift) {
@@ -31,12 +31,10 @@ export class GiftPaymentService {    constructor(
                 throw new BadRequestException(`Gift must be reserved before creating a payment. Current status: ${GiftStatus[gift.status_id]}`);
             }
 
-            // Verifica se o valor do pagamento é igual ao preço do presente
             if (data.amount !== gift.price) {
                 throw new BadRequestException(`Payment amount must match gift price. Expected: ${gift.price}, Received: ${data.amount}`);
             }
 
-            // Cria o pagamento com status inicial PENDING
             const payment = await this.giftPaymentRepository.create({
                 giftId: data.giftId,
                 userId: data.userId,
@@ -77,7 +75,6 @@ export class GiftPaymentService {    constructor(
 
             return payment;
         } catch (error) {
-            console.log('Error updating payment:', error);
             if (error instanceof NotFoundException) {
                 throw error;
             }

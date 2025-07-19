@@ -20,6 +20,7 @@ export class UserService {
     username: string;
     email: string;
     external_id: string;
+    role_id: number;
     phone_number?: string;
     email_verified?: boolean;
   }): Promise<User> {
@@ -30,6 +31,7 @@ export class UserService {
         external_id: data.external_id,
         phone_number: data.phone_number,
         email_verified: data.email_verified || false,
+        role_id: data.role_id
       },
     });
   }

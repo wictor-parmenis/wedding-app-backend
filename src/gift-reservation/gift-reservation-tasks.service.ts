@@ -31,10 +31,9 @@ export class GiftReservationTasksService {
 
             this.logger.debug(`Found ${expiredReservations.length} expired reservations`);
 
-            // Process each expired reservation
             for (const reservation of expiredReservations) {
                 try {
-                    await this.giftReservationService.delete(reservation.gift_id);
+                    // await this.giftReservationService.delete(reservation.gift_id);
                     this.logger.debug(`Successfully deleted reservation for gift ${reservation.gift_id}`);
                 } catch (error) {
                     this.logger.error(

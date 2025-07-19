@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { FirebaseService } from '../firebase/firebase.service';
 import { UserService } from '../user/user.service';
+import { RoleEnum } from './auth.enums';
 
 @Injectable()
 export class AuthService {
@@ -34,6 +35,7 @@ export class AuthService {
         external_id: userRecord.uid,
         phone_number: phoneNumber,
         email_verified: userRecord.emailVerified,
+        role_id: 1,
       });
 
       return {
@@ -140,5 +142,10 @@ export class AuthService {
         info: 'Note: In production, use Firebase Client SDK to send reset email'
       };
     }
+  }
+
+  async isAdmin(userId: number): Promise<boolean> {
+    const user = await this.userService.findById(userId);
+    return user?.role_id === RoleEnum.ADMIN;
   }
 }

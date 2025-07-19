@@ -2,10 +2,16 @@ import { Injectable, BadRequestException, NotFoundException } from '@nestjs/comm
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateGiftReservationDto } from './dto/create-gift-reservation.dto';
 import { GiftStatus } from '../gift/enums/gift.enum';
+import { GiftPaymentService } from 'src/gift-payment/gift-payment.service';
+import { Gift } from '@prisma/client';
+import { PaymentMethod } from "../gift-payment/enums/payment-method.enum";
 
 @Injectable()
 export class GiftReservationService {
-    constructor(private readonly prisma: PrismaService) {}
+    constructor(
+        private readonly prisma: PrismaService,
+        private readonly giftPaymentService: GiftPaymentService,
+    ) {}
 
     async create(userId: number, createDto: CreateGiftReservationDto) {
         const gift = await this.prisma.gift.findUnique({
@@ -30,12 +36,10 @@ export class GiftReservationService {
             throw new BadRequestException('Gift is already reserved');
         }
 
-        // Cria a reserva com TTL de 7 dias
         const sevenDaysFromNow = new Date();
         sevenDaysFromNow.setDate(sevenDaysFromNow.getDate() + 7);
 
         const [reservation] = await this.prisma.$transaction([
-            // Cria a reserva
             this.prisma.giftReservation.create({
                 data: {
                     gift_id: createDto.giftId,
@@ -53,7 +57,6 @@ export class GiftReservationService {
                     }
                 }
             }),
-            // Atualiza o status do presente para RESERVED
             this.prisma.gift.update({
                 where: { id: createDto.giftId },
                 data: { status_id: GiftStatus.RESERVED }
@@ -63,7 +66,7 @@ export class GiftReservationService {
         return reservation;
     }
 
-    async delete(giftId: number) {
+    async cancel(giftId: number) {
         const reservation = await this.prisma.giftReservation.findUnique({
             where: {
                 gift_id: giftId
@@ -77,9 +80,7 @@ export class GiftReservationService {
             throw new NotFoundException(`No active reservation found for gift ID ${giftId}`);
         }
 
-        // Usa transação para garantir que tanto a reserva seja removida quanto o presente volte para disponível
         const [deletedReservation] = await this.prisma.$transaction([
-            // Remove a reserva
             this.prisma.giftReservation.delete({
                 where: {
                     gift_id: giftId
@@ -95,13 +96,43 @@ export class GiftReservationService {
                     }
                 }
             }),
-            // Atualiza o status do presente para AVAILABLE
             this.prisma.gift.update({
                 where: { id: giftId },
                 data: { status_id: GiftStatus.AVAILABLE }
-            })
+            }),
         ]);
 
         return deletedReservation;
+    }
+
+    async reserve(gift: Gift, userId: number, paymentMethod: PaymentMethod) {
+
+        await this.create(userId, {
+            giftId: gift.id,
+        })
+
+         const payment = await this.giftPaymentService.create({
+                giftId: gift.id,
+                userId: userId,
+                amount: gift.price,
+                paymentMethodId: paymentMethod
+         });
+        
+        
+        return payment;
+    }
+
+    async isReservationOwner(userId: number, giftId: number): Promise<boolean> {
+        const reservation = await this.prisma.giftReservation.findUnique({
+            where: {
+                gift_id: giftId
+            }
+        });
+
+        if (!reservation) {
+            return false;
+        }
+
+        return reservation.user_id === userId;
     }
 }

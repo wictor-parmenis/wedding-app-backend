@@ -28,6 +28,8 @@ COPY --from=builder /usr/src/app/dist ./dist
 COPY --from=builder /usr/src/app/generated ./generated
 COPY prisma ./prisma
 
+RUN ls -l /usr/src/app/generated
+
 EXPOSE 3000
 
 # Comando para gerar o client do Prisma, aplicar migrações e iniciar a aplicação

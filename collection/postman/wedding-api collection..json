@@ -43,7 +43,7 @@
             "url": "{{urlBase}}auth/register",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"username\": \"Adilson Matos\",\n  \"password\": \"132465789\",\n  \"email\": \"nunojira@gmail.com\"\n}",
+              "raw": "{\n  \"username\": \"Wictor Gomes\",\n  \"password\": \"132465789\",\n  \"email\": \"wictortec@gmail.com\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -61,7 +61,7 @@
             "url": "{{urlBase}}auth/test-token",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"nunojira@gmail.com\"\n}",
+              "raw": "{\n  \"email\": \"wictortec@gmail.com\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -97,7 +97,7 @@
               "request": {
                 "method": "PATCH",
                 "header": [],
-                "url": "{{urlBase}}gifts/2/cancel-purchase?id=8"
+                "url": "{{urlBase}}gifts/12/cancel-purchase"
               }
             },
             {
@@ -113,7 +113,7 @@
                     "type": "default"
                   }
                 ],
-                "url": "{{urlBase}}gifts/2/cancel-reservation"
+                "url": "{{urlBase}}gifts/12/cancel-reservation"
               }
             },
             {
@@ -154,16 +154,7 @@
                     "type": "default"
                   }
                 ],
-                "url": "{{urlBase}}gifts/1/confirm-direct-purchase",
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\n    \"weddingId\": 4,\n    \"urlImage\": \"https://example.com/gift10.jpg\",\n    \"description\": \"Air Fryer 4L\",\n    \"price\": 45000\n}",
-                  "options": {
-                    "raw": {
-                      "language": "json"
-                    }
-                  }
-                }
+                "url": "{{urlBase}}gifts/12/confirm-direct-purchase"
               }
             },
             {
@@ -172,7 +163,7 @@
               "request": {
                 "method": "GET",
                 "header": [],
-                "url": "{{urlBase}}gifts?coupleId=1"
+                "url": "{{urlBase}}gifts"
               }
             },
             {
@@ -188,7 +179,7 @@
                     "type": "default"
                   }
                 ],
-                "url": "{{urlBase}}gifts/2/reserve"
+                "url": "{{urlBase}}gifts/12/reserve"
               }
             },
             {
@@ -233,6 +224,74 @@
                 "body": {
                   "mode": "raw",
                   "raw": "{\n  \"description\": \"Geladeira Frost Free 600L\",\n  \"price\": 600000,\n  \"urlImage\": \"https://example.com/gift1-updated.jpg\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "name": "Gift Details",
+              "event": [],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": "{{urlBase}}gifts?coupleId=1"
+              }
+            },
+            {
+              "name": "List gifts (admin)",
+              "event": [],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": "{{urlBase}}admin/gifts/12"
+              }
+            },
+            {
+              "name": "Reserve (admin)",
+              "event": [],
+              "request": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "disabled": false,
+                    "type": "default"
+                  }
+                ],
+                "url": "{{urlBase}}admin/gifts/11/reserve",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"user_id\": 4\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "name": "Cancel reservation (admin)",
+              "event": [],
+              "request": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "disabled": false,
+                    "type": "default"
+                  }
+                ],
+                "url": "{{urlBase}}admin/gifts/11/cancel-reservation",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"user_id\": 4\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -289,7 +348,7 @@
                     "type": "default"
                   }
                 ],
-                "url": "{{urlBase}}gifts/2/payments/8/proof",
+                "url": "{{urlBase}}gifts/2/payments/4/proof",
                 "body": {
                   "mode": "formdata",
                   "formdata": [
